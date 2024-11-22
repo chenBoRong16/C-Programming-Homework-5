@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <time.h>
-#include <stdlib.h> // ¶Ã¼Æ¬ÛÃö¨ç¼Æ
+#include <stdlib.h> // äº‚æ•¸ç›¸é—œå‡½æ•¸
 #define MIN(a, b) (((a) < (b))? (a): (b))
-#define digitCount 4 // µª®×©M²q´úªº¦ì¼Æ
-#define guessLimit 2 // ²q´úªº¦¸¼Æ­­¨î
+#define digitCount 4 // ç­”æ¡ˆå’ŒçŒœæ¸¬çš„ä½æ•¸
+#define guessLimit 2 // çŒœæ¸¬çš„æ¬¡æ•¸é™åˆ¶
 typedef struct{
-    int A; // ¦ì¸m¥¿½T¥B¼Æ¦r¥¿½Tªº­Ó¼Æ
-    int B; // ¦ì¸m¿ù»~¦ı¼Æ¦r¥¿½Tªº­Ó¼Æ
+    int A; // ä½ç½®æ­£ç¢ºä¸”æ•¸å­—æ­£ç¢ºçš„å€‹æ•¸
+    int B; // ä½ç½®éŒ¯èª¤ä½†æ•¸å­—æ­£ç¢ºçš„å€‹æ•¸
 }ABresult;
 
-int digitArr[10] = {0,1,2,3,4,5,6,7,8,9}; // ¥i¥Îªº¼Æ¦r½d³ò 0-9
+int digitArr[10] = {0,1,2,3,4,5,6,7,8,9}; // å¯ç”¨çš„æ•¸å­—ç¯„åœ 0-9
 
-// ¨ç¦¡«Å§i:
+// å‡½å¼å®£å‘Š:
 ABresult compare_array(int *input, int *target);
 void randomize(int *target);
 void reset_digitArr();
@@ -19,87 +19,87 @@ void swap(int *input, int index, int index1);
 void print_int_array(int *input);
 
 int main(){
-    srand(time(NULL)); // ªì©l¤ÆÀH¾÷¼ÆºØ¤l
+    srand(time(NULL)); // åˆå§‹åŒ–éš¨æ©Ÿæ•¸ç¨®å­
 
-    int guess_time = guessLimit; // ªì©l¤Æ²q´ú¦¸¼Æ
+    int guess_time = guessLimit; // åˆå§‹åŒ–çŒœæ¸¬æ¬¡æ•¸
     int answer[digitCount];
-    randomize(answer); // ÀH¾÷¥Í¦¨µª®×
+    randomize(answer); // éš¨æ©Ÿç”Ÿæˆç­”æ¡ˆ
 
     while (guess_time > 0){
         guess_time--;
         int guess[digitCount];
-        randomize(guess); // ÀH¾÷¥Í¦¨²q´ú¼Æ¦r¡]©Î¥Î¤á¿é¤J¡^
-        printf("input four different number:(¨Ò¦p2178)");
-        print_int_array(guess); // ¥´¦L·í«e²q´úªº¼Æ¦r
+        randomize(guess); // éš¨æ©Ÿç”ŸæˆçŒœæ¸¬æ•¸å­—ï¼ˆæˆ–ç”¨æˆ¶è¼¸å…¥ï¼‰
+        printf("input four different number:(ä¾‹å¦‚2178)");
+        print_int_array(guess); // æ‰“å°ç•¶å‰çŒœæ¸¬çš„æ•¸å­—
         printf("\n");
 
-        ABresult result = compare_array(guess, answer); // ¤ñ¸û²q´ú©Mµª®×
-        printf("µ²ªG:%dA%dB¡AÁÙ¦³%d¦¸¾÷·|...\n", result.A, result.B, guess_time);
-        if (result.A == digitCount){ // ¦pªG©Ò¦³¦ì¼Æ©M¦ì¸m³£¥¿½T
-            printf("§A²q¹ï¤F!\n");
+        ABresult result = compare_array(guess, answer); // æ¯”è¼ƒçŒœæ¸¬å’Œç­”æ¡ˆ
+        printf("çµæœ:%dA%dBï¼Œé‚„æœ‰%dæ¬¡æ©Ÿæœƒ...\n", result.A, result.B, guess_time);
+        if (result.A == digitCount){ // å¦‚æœæ‰€æœ‰ä½æ•¸å’Œä½ç½®éƒ½æ­£ç¢º
+            printf("ä½ çŒœå°äº†!\n");
             return 0;
         }
     }
 
-    printf("¥¢±Ñ¡A²q¶W¹L%d¦¸¡Aµª®×¬O", guessLimit);
-    print_int_array(answer); // Åã¥Ü¥¿½Tµª®×
+    printf("å¤±æ•—ï¼ŒçŒœè¶…é%dæ¬¡ï¼Œç­”æ¡ˆæ˜¯", guessLimit);
+    print_int_array(answer); // é¡¯ç¤ºæ­£ç¢ºç­”æ¡ˆ
     printf("\n");
     return 0;
 }
 
-// ¤ñ¸û²q´ú©Mµª®×¡Aªğ¦^AB­È
+// æ¯”è¼ƒçŒœæ¸¬å’Œç­”æ¡ˆï¼Œè¿”å›ABå€¼
 ABresult compare_array(int *guess, int *target){
-    int guess_show_count[10] = {0}; // °O¿ı²q´ú¤¤¦U¼Æ¦r¥X²{¦¸¼Æ
-    int target_show_count[10] = {0}; // °O¿ıµª®×¤¤¦U¼Æ¦r¥X²{¦¸¼Æ
+    int guess_show_count[10] = {0}; // è¨˜éŒ„çŒœæ¸¬ä¸­å„æ•¸å­—å‡ºç¾æ¬¡æ•¸
+    int target_show_count[10] = {0}; // è¨˜éŒ„ç­”æ¡ˆä¸­å„æ•¸å­—å‡ºç¾æ¬¡æ•¸
     int i;
     ABresult result = {0, 0};
     for (i = 0; i < digitCount; i++){
         if (guess[i] == target[i]){
-            result.A ++; // ¦ì¸m©M¼Æ¦r³£¥¿½T
+            result.A ++; // ä½ç½®å’Œæ•¸å­—éƒ½æ­£ç¢º
         }
         else{
-            guess_show_count[guess[i]]++; // °O¿ı¥X²{¦¸¼Æ
+            guess_show_count[guess[i]]++; // è¨˜éŒ„å‡ºç¾æ¬¡æ•¸
             target_show_count[target[i]]++;
         }
     }
 
-    // ­pºâ¦ì¸m¿ù»~¦ı¼Æ¦r¥¿½TªºB­È
+    // è¨ˆç®—ä½ç½®éŒ¯èª¤ä½†æ•¸å­—æ­£ç¢ºçš„Bå€¼
     for (i = 0; i < 10; i++){
         result.B += MIN(guess_show_count[i], target_show_count[i]);
     }
     return result;
 }
 
-// ÀH¾÷¥Í¦¨µª®×
+// éš¨æ©Ÿç”Ÿæˆç­”æ¡ˆ
 void randomize(int *target){
-    int leftDigitCount = 10; // ¥i¥Îªº¼Æ¦rÁÙ³Ñ¦h¤Ö
+    int leftDigitCount = 10; // å¯ç”¨çš„æ•¸å­—é‚„å‰©å¤šå°‘
     int changeIndex = 0;
 
     for (; changeIndex < digitCount; changeIndex++, leftDigitCount--){
-        int picked_num = rand() % leftDigitCount; // ÀH¾÷¬D¿ï¤@­Ó¼Æ¦r
+        int picked_num = rand() % leftDigitCount; // éš¨æ©ŸæŒ‘é¸ä¸€å€‹æ•¸å­—
         int picked_index = changeIndex + picked_num;
-        target[changeIndex] = digitArr[picked_index]; // ±qdigitArr¤¤¬D¿ï¼Æ¦r
-        swap(digitArr, changeIndex, picked_index); // §ó·sdigitArr¡A¨Ï¤w¿ïªº¼Æ¦r¤£¦A³Q¿ï¾Ü
+        target[changeIndex] = digitArr[picked_index]; // å¾digitArrä¸­æŒ‘é¸æ•¸å­—
+        swap(digitArr, changeIndex, picked_index); // æ›´æ–°digitArrï¼Œä½¿å·²é¸çš„æ•¸å­—ä¸å†è¢«é¸æ“‡
     }
 
-    reset_digitArr(); // ­«¸m digitArr
+    reset_digitArr(); // é‡ç½® digitArr
 }
 
-// ­«¸m digitArr ¬°ªì©lª¬ºA
+// é‡ç½® digitArr ç‚ºåˆå§‹ç‹€æ…‹
 void reset_digitArr() {
     for (int i = 0; i < 10; i++) {
         digitArr[i] = i;
     }
 }
 
-// ¥æ´«¼Æ²Õ¤¤ªº¨â­Ó¤¸¯À
+// äº¤æ›æ•¸çµ„ä¸­çš„å…©å€‹å…ƒç´ 
 void swap(int *input, int index, int index1){
     int temp = input[index]; 
     input[index] = input[index1];
     input[index1] = temp;
 }
 
-// ¥´¦L¾ã¼Æ¼Æ²Õ
+// æ‰“å°æ•´æ•¸æ•¸çµ„
 void print_int_array(int *input){
     int i;
     for (i = 0; i < digitCount; i++){
